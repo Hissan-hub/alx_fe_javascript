@@ -1,11 +1,15 @@
 let quotes = [
-  { text: "Success is not final, failure is not fatal.", category: "Success" }
+  { text: "Success is not final, failure is not fatal.", category: "Inspiration },
+  { text: "The only limit to our realization tomorrow is our doubts today.", category: "Motivation" },
+  { text: "Believe you can and you're halfway there.", category: "Confidence" }
 ];
 
-function showRandomQuote() {
+function displayRandomQuote() {
   const quoteDisplay = document.getElementById("quoteDisplay");
   const randomIndex = Math.floor(Math.random() * quotes.length);
-  quoteDisplay.textContent = `${quotes[randomIndex].text} — ${quotes[randomIndex].category}`;
+  const randomQuote = quotes[randomIndex];
+
+  quoteDisplay.textContent = `"${randomQuote.text}" — ${randomQuote.category}`;
 }
 
 function addQuote() {
@@ -16,17 +20,17 @@ function addQuote() {
   const newCategory = categoryInput.value.trim();
 
   if (newText === "" || newCategory === "") {
-    alert("Please enter both a quote and a category.");
+    alert("Please fill in both fields");
     return;
   }
 
   quotes.push({ text: newText, category: newCategory });
 
-  const quoteDisplay = document.getElementById("quoteDisplay");
-  quoteDisplay.textContent = `New quote added!`;
-
   textInput.value = "";
   categoryInput.value = "";
+
+  displayRandomQuote();
 }
 
-document.getElementById("newQuote").addEventListener("click", showRandomQuote);
+document.getElementById("newQuote").addEventListener("click", displayRandomQuote);
+
