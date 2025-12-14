@@ -1,61 +1,64 @@
 let quotes = [
-  { text: "Learning never exhausts the mind.", category: "Education" },
-  { text: "Code is like humor. When you have to explain it, it’s bad.", category: "Programming" }
+ { text: "The best way to get started is to quit talking and begin doing.", category: "Motivation" },
+ { text: "Success is not final, failure is not fatal.", category: "Inspiration" }
+
 ];
 
-function saveQuotes() {
-  localStorage.setItem('quotes', JSON.stringify(quotes));
-}
-
 function loadQuotes() {
-  const storedQuotes = localStorage.getItem('quotes');
+  const storedQuotes = localStorage.getItem("quotes");
   if (storedQuotes) {
     quotes = JSON.parse(storedQuotes);
   }
 }
 
-function displayRandomQuote() {
-  const randomIndex = Math.floor(Math.random() * quotes.length);
-  const quote = quotes[randomIndex];
-  document.getElementById('quoteDisplay').textContent =
-    `"${quote.text}" — ${quote.category}`;
+function saveQuotes() {
+  localStorage.setItem("quotes", JSON.stringify(quotes));
+}
 
-  sessionStorage.setItem('lastQuote', JSON.stringify(quote));
+function displayRandomQuote() {
+  if (quotes.length === 0) return;
+  const randomIndex = Math.floor(Math.random() * quotes.length);
+  document.getElementById("quoteDisplay").textContent =
+    `"${quotes[randomIndex].text}" — ${quotes[randomIndex].category}`;
+
+  sessionStorage.setItem("lastQuote", quotes[randomIndex].text);
 }
 
 function addQuote() {
-  const textInput = document.getElementById('newQuoteText');
-  const categoryInput = document.getElementById('newQuoteCategory');
+  const text = document.getElementById("newQuoteText").value;
+  const category = document.getElementById("newQuoteCategory").value;
 
-  if (!textInput.value || !categoryInput.value) {
-    alert('Please fill in both fields');
-    return;
+  if (text && category) {
+    quotes.push({ text, category });
+    saveQuotes();
+    displayRandomQuote();
   }
+}
 
-  quotes.push({
-    text: textInput.value,
-    category: categoryInput.value
+function exportToJsonFile() {
+  const blob = new Blob([JSON.stringify(quotes, null, 2)], {
+    type: "application/json"
   });
 
-  saveQuotes();
-
-  textInput.value = '';
-  categoryInput.value = '';
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "quotes.json";
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function importFromJsonFile(event) {
-  const reader = new FileReader();
-  reader.onload = function(e) {
+  const fileReader = new FileReader();
+  fileReader.onload = function (e) {
     const importedQuotes = JSON.parse(e.target.result);
     quotes.push(...importedQuotes);
     saveQuotes();
-    alert('Quotes imported successfully!');
+    alert("Quotes imported successfully!");
   };
-  reader.readAsText(event.target.files[0]);
+  fileReader.readAsText(event.target.files[0]);
 }
 
-loadQuotes();
+document.getElementById("newQuote").addEventListener("click", displayRandomQuote);
 
-document
-  .getElementById('newQuote')
-  .addEventListener('click', displayRandomQuote);
+loadQuotes();
