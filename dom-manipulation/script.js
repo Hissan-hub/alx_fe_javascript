@@ -70,3 +70,34 @@ filterQuotes();
 
 const lastQuote = sessionStorage.getItem("lastQuote");
 if (lastQuote) quoteDisplay.textContent = lastQuote;
+const SERVER_URL = "https://jsonplaceholder.typicode.com/posts";
+async function fetchServerQuotes() {
+  try {
+    const response = await fetch(SERVER_URL);
+    const data = await response.json();
+
+    const serverQuotes = data.slice(0, 5).map(item => ({
+      text: item.title,
+      category: "server"
+    }));
+
+    resolveConflicts(serverQuotes);
+  } catch (error) {
+    console.error("Server fetch failed", error);
+  }
+}
+
+function resolveConflicts(serverQuotes) {
+  quotes = serverQuotes;
+  saveQuotes();
+  displayRandomQuote();
+
+  const status = document.getElementById("syncStatus");
+  status.textContent = "Quotes synced from server. Server data applied.";
+}
+
+document.getElementById("syncNow").addEventListener("click", () => {
+  fetchServerQuotes();
+});
+
+setInterval(fetchServerQuotes, 30000);
